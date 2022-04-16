@@ -9,59 +9,31 @@ import SwiftUI
 
 struct SplashView: View{
     
-    @State var state: SplashUIState = .loading
+    @ObservedObject var viewModel: SplashViewModel
 
     var body: some View {
-        switch state {
-            case .loading:
-                loadingView()
-            //Navegar para a próxima tela
-            case .goToSignInScreen:
-                Text("sIGN SCREEN")
-                
-            //Navegar para a próxima tela
-            case .goToHomeScreen:
-                Text("Home Screen")
-                
-            case .error(let msg):
-                Text("Mostrar erro: \n\(msg)")
-        }
+        Group{
+            switch viewModel.uiState {
+                case .loading:
+                    loadingView()
+                        //Navegar para a próxima tela
+                case .goToSignInScreen:
+                    Text("Sign in Screen")
+                    
+                        //Navegar para a próxima tela
+                case .goToHomeScreen:
+                    Text("Home Screen")
+                    
+                case .error(let msg):
+                    loadingView(error: msg)
+            }
+        }.onAppear(perform:{
+            viewModel.onAppear()
+        })
     }
 }
 
-/**
-// 1. Compartilhamento de Objetos.
-struct LoadingView: View{
-    var body: some View{
-        ZStack{
-            Image("pomoFoxLogo")
-                .resizable()
-                .scaledToFit()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.white)
-                .padding(80)
-                .ignoresSafeArea()
-        }
-    }
-}
-*/
 
-/**
-// 2. Váriaveis em Extensões.
-extension SplashView {
-    var loading: some View {
-        ZStack{
-            Image("pomoFoxLogo")
-                .resizable()
-                .scaledToFit()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.white)
-                .padding(80)
-                .ignoresSafeArea()
-        }
-    }
-}
-*/
 // 3. Funções em Extensões
 extension SplashView {
     func loadingView(error: String? = nil) -> some View {
@@ -73,13 +45,22 @@ extension SplashView {
                 .background(Color.white)
                 .padding(80)
                 .ignoresSafeArea()
+            
+            if let error = error{
+                Text("")
+                    .alert(isPresented: .constant(true)){
+                        Alert(title: Text("Pomofox"), message: Text(error), dismissButton: .default(Text("OK")){
+                          //Faz algo quando some o alaerta
+                    })
+                }
+            }
         }
     }
 }
 
-
 struct SplashView_Previews: PreviewProvider {
     static var previews: some View {
-        SplashView(state: .error("Hello"))
+        let viewModel = SplashViewModel()
+        SplashView(viewModel: viewModel)
     }
 }

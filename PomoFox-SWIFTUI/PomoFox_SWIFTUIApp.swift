@@ -11,7 +11,7 @@ import SwiftUI
 struct PomoFox_SWIFTUIApp: App {
     var body: some Scene {
         WindowGroup {
-            SplashView()
+            SplashView(viewModel: SplashViewModel())
         }
     }
 }
